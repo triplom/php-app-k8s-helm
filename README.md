@@ -103,7 +103,7 @@ kubectl cluster-info
 To deploy the example application in K8S, we use the Helm CLI: install 
 
 ```bash
-helm install --set mariadb.mariadbRootPassword=mini,mariadb.mariadbUser=mini,mariadb.mariadbPassword=mini,mariadb.mariadbDatabase=mini --name phpfpm .
+helm install phpfpm . --set mariadb.mariadbRootPassword=mini,mariadb.mariadbUser=mini,mariadb.mariadbPassword=mini,mariadb.mariadbDatabase=mini
 ```
 
 **NOTE:**

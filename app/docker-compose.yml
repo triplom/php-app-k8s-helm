@@ -6,18 +6,18 @@ networks:
 
 services:
   phpfpm:
-    image: USERNAME/phpfpm-app:0.1.0
+    image: triplom/phpfpm-app:0.1.0
     networks:
       - app-tier
   nginx:
-    image: 'bitnami/nginx:1.12.0-r2'
+    image: 'bitnami/nginx:latest'
     depends_on:
       - phpfpm
     networks:
       - app-tier
     ports:
-      - '80:80'
-      - '443:443'
+      - '8100:80'
+      - '8443:443'
     volumes:
       - ./vhosts:/bitnami/nginx/conf/vhosts
   mariadb:
