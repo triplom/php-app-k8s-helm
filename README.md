@@ -1,44 +1,44 @@
-# k8s-helming: Deploy A PHP Application On Kubernetes With Helm
+# Deploying a PHP Application on Kubernetes with Helm
 
-Run a custom PHP application (PHP-FPM), MySQL database (with persistent disk and secret credentials) and Nginx server on Kubernetes with Helm charts.
+This guide walks you through deploying a custom PHP application (PHP-FPM), MySQL database, and Nginx server on Kubernetes using Helm charts.
 
-# Introduction
-This README walks you through the process of running an example PHP (PHP-FPM) application on a Kubernetes cluster.
-This solution allows you to automate the deployment, the scaling and management of the application containers.
+## Introduction
 
-The first step is to obtain the application source code, Dockerfile and the docker-compose.yml file
-and use them as a starting point for creating a custom Helm chart to automate the application deployment in a Kubernetes cluster. 
+This README provides a comprehensive guide for deploying a PHP application on a Kubernetes cluster. By leveraging Helm charts, you can automate the deployment, scaling, and management of your application containers.
 
-# Steps:
-To create your own application in PHP-FPM and deploy it on Kubernetes using Helm, you will typically follow these steps:
+To begin, you'll need the application source code, a Dockerfile, and a docker-compose.yml file. These will serve as the foundation for creating a Helm chart to automate deployment on Kubernetes.
 
-1.  Obtain the application source code
-2.  Build the Docker image
-3.  Publish the Docker image
-4.  Deploy the example application in Kubernetes
+## Steps
 
-# Step 1: Obtain The Application Source Code
+Follow these steps to deploy your PHP application on Kubernetes using Helm:
 
-Clone the repository. This will clone the sample repository and make it the current directory:
+### Step 1: Obtain the Application Source Code
 
-* `$ git clone https://gitlab.com/aymen_segni/basic-k8s-helm.git`
+Clone the repository:
 
-* `$ cd php-mysql-nginx-kubernetes-helm/`
+```bash
+git clone https://github.com/triplom/basic-k8s-helm.git
+cd php-mysql-nginx-kubernetes-helm/
+```
 
-In the **app** folder you will see a file named phpminiadmin.php. This is a small PHP application for accessing and managing MySQL databases which we will use as an example application.
+Inside the app folder, you'll find phpminiadmin.php, a PHP application for managing MySQL databases.
 
-# Step 2: Build The Docker Image
+### Step 2: Build The Docker Image
 
 The source code already contains the Dockerfile and the docker-compose.yml file needed for this example.
 Replace the **USERNAME** placeholder in the app/docker-compose.yml file with your Docker ID.
 
 Build the image using the command below. Remember to replace the USERNAME placeholder with your Docker ID:
 
-* `$ docker build . -t  USERNAME/phpfpm-app:0.1.0`
+```bash
+docker build . -t  USERNAME/phpfpm-app:0.1.0
+```
 
 Run the docker-compose up command in order to create and start the containers:
 
-* `$ docker-compose -f app/docker-compose.yml up`
+```bash
+ docker-compose -f app/docker-compose.yml up -d
+ ```
 
 Check if the application is running correctly by entering http://localhost/phpminiadmin.php in your default browser.
 
@@ -49,32 +49,42 @@ To log in to the application, you must connect first to the database. Click the 
 *  MySQL host: mariadb
 *  port: 3306
 
-# Step 3: Publish The Docker Image
+### Step 3: Publish the Docker Image
 
 To upload the image to Docker Hub, follow the steps below:
 
-* Log in to Docker Hub: `$ docker login`
+* Log in to Docker Hub:
+
+```bash
+docker login 
+```
+
 * Push the image to your Docker Hub account. Replace the USERNAME placeholder with your Docker ID:
 
-`$ docker push USERNAME/phpfpm-app:0.1.0`
+```bash
+docker push USERNAME/phpfpm-app:0.1.0 
+```
 
-# Step 4: Deploy The Example Application In Kubernetes 
+### Step 4: Deploy The Example Application In Kubernetes
 
 Move into the **helm-chart** directory by executing the command :
 
-`$ cd helm-chart`
+```bash
+cd /helm-chart
+```
 
-In the helm folder we have:
+In the `helm folder`, you'll find:
 
 * Chart.yaml : This file includes the metadata of the Helm chart like the version or the description.
 * values.yaml : This file declares variables to be passed into the templates. It is important to replace the **USERNAME** with your Docker ID, and also to check if the container name and version exist.
 
-```
+Example snippet from `values.yaml`:
+
+```yaml
 image:
 repository: USERNAME/phpfpm-app
 tag: 0.1.0
 ```
-
 
 Using the helm install command, we will create three pods within the cluster, one for the Nginx service,
 
@@ -82,16 +92,19 @@ another for the MariaDB service with a persistent disk (**Persistent Volume Clai
 
 Also we will create a **K8S Secret object** with Opaque type to store the Database credentials: mariadb-password: xxxxx & mariadb-root-password: xxxxx
 
-
-## Deploy the app with helm:
+## Deploy the app with helm
 
 First, make sure that you are able to connect to your Kubernetes cluster by executing the command below:
 
-`$ kubectl cluster-info`
+```bash
+kubectl cluster-info
+```
 
 To deploy the example application in K8S, we use the Helm CLI: install 
 
-`$ helm install --set mariadb.mariadbRootPassword=mini,mariadb.mariadbUser=mini,mariadb.mariadbPassword=mini,mariadb.mariadbDatabase=mini --name phpfpm .`
+```bash
+helm install --set mariadb.mariadbRootPassword=mini,mariadb.mariadbUser=mini,mariadb.mariadbPassword=mini,mariadb.mariadbDatabase=mini --name phpfpm .
+```
 
 **NOTE:**
 * The database name, root password, and user credentials have been specified by adding the --set options, and the chart name is specified by adding the --name option.
@@ -102,6 +115,7 @@ The application won’t be available until database configuration is complete.
 
 ## Get the application URL
 
+e.g: Miikube
 In Minikube, we can check the application service to get the application’s URL:
 
 `$ minikube service phpfpm-php-app-nginx --url`
@@ -111,11 +125,7 @@ In Minikube, we can check the application service to get the application’s URL
 Copy the **application url** from the last command output. then, using this value open **application url**/phpminiadmin.php in your default browser, 
 
 and use the **right Mariadb credentials** (use the database service name: **phpfpm-mariadb** as the **MYSQL_HOST**) to access the phpminiadmin application.
-Finally, we can read data  from the database by runnig the SQL query ike the list of tables, databases ... 
+Finally, we can read data  from the database by runnig the SQL query ike the list of tables, databases ...
 ![alt APP](result.png)
 
-
 Congratulations! our PHP application has been successfully deployed on Kubernetes!
-
-
-
