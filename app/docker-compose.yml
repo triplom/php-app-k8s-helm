@@ -1,4 +1,4 @@
-version: '2'
+version: '3.9'
 
 networks:
   app-tier:
@@ -6,7 +6,7 @@ networks:
 
 services:
   phpfpm:
-    image: triplom/phpfpm-app:0.1.0
+    image: triplom/phpfpm-app:0.1.3
     networks:
       - app-tier
   nginx:
@@ -16,10 +16,11 @@ services:
     networks:
       - app-tier
     ports:
-      - '8100:80'
+      - '8080:8080'
       - '8443:443'
     volumes:
-      - ./vhosts:/bitnami/nginx/conf/vhosts
+      #- ./vhosts:/bitnami/nginx/conf/vhosts
+      - ./opt/bitnami/nginx/conf/server_blocks
   mariadb:
     image: bitnami/mariadb:latest
     environment:

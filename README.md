@@ -107,6 +107,7 @@ helm install phpfpm . --set mariadb.mariadbRootPassword=mini,mariadb.mariadbUser
 ```
 
 **NOTE:**
+
 * The database name, root password, and user credentials have been specified by adding the --set options, and the chart name is specified by adding the --name option.
 * The `mini` values is a placeholders for the database root password, user credentials and database name respectively, remember to replace them with the right values.
 Once the chart has been installed, you will see a lot of useful information about the deployment.

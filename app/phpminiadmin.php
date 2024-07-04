@@ -37,7 +37,7 @@ if (function_exists('date_default_timezone_set')) date_default_timezone_set('UTC
  ini_set('display_errors',0);  #turn on to debug db or script issues
  error_reporting(E_ALL ^ E_NOTICE);
 //strip quotes if they set
- if (get_magic_quotes_gpc()){
+if (ini_get('magic_quotes_gpc')){
   $_COOKIE=array_map('killmq',$_COOKIE);
   $_REQUEST=array_map('killmq',$_REQUEST);
  }
@@ -125,7 +125,12 @@ function do_sql($q){
  $SQLq=$q;
  if (!do_multi_sql($q)){
     $out_message="Error: ".mysqli_error($dbh);
- }else{
+ } elseif ($_REQUEST['logoff']) {
+
+
+
+}
+else {
     if ($last_sth && $last_sql){
        $SQLq=$last_sql;
        if (preg_match("/^select|show|explain|desc/i",$last_sql)) {
@@ -187,49 +192,64 @@ function display_select($sth,$q){
  $sqldr.=$headers;
  $swapper=false;
  while($row=mysqli_fetch_row($sth)){
-   $sqldr.="<tr class='".$rc[$swp=!$swp]."' onclick='tc(this)'>";
-   $v=$row[0];
-   if ($is_sht){
-     $vq='`'.$v.'`';
-     $url='?'.$xurl."&db=$dbn&t=".b64e($v);
-     $v="<input type='checkbox' name='cb[]' value=\"$vq\"></td>"
-     ."<td><a href=\"$url&q=".b64e("select * from $vq")."\">$v</a></td>"
-     ."<td>".$row[1]."</td>"
-     ."<td align='right'>".$row[4]."</td>"
-     ."<td align='right'>".$row[6]."</td>"
-     ."<td align='right'>".$row[8]."</td>"
-     ."<td>&#183;<a href=\"$url&q=".b64e("show create table $vq")."\">sct</a></td>"
-     ."<td>&#183;<a href=\"$url&q=".b64e("explain $vq")."\">exp</a></td>"
-     ."<td>&#183;<a href=\"$url&q=".b64e("show index from $vq")."\">ind</a></td>"
-     ."<td>&#183;<a href=\"$url&shex=1&rt=$vq\">export</a></td>"
-     ."<td>&#183;<a href=\"$url&q=".b64e("drop table $vq")."\" onclick='return ays()'>dr</a></td>"
-     ."<td>&#183;<a href=\"$url&q=".b64e("truncate table $vq")."\" onclick='return ays()'>tr</a></td>"
-     ."<td>&#183;<a href=\"$url&q=".b64e("optimize table $vq")."\" onclick='return ays()'>opt</a></td>"
-     ."<td>&#183;<a href=\"$url&q=".b64e("repair table $vq")."\" onclick='return ays()'>rpr</a></td>"
-     ."<td>".hs($row[$fields_num-1]);
-     $sqldr.="<td>$v</td>";
-   }elseif ($is_shd){
-     $url='?'.$xurl."&db=$v";
-     $v="<a href=\"$url&q=".b64e("SHOW TABLE STATUS")."\">$v</a></td>"
-     ."<td><a href=\"$url&q=".b64e("show create database `$v`")."\">scd</a></td>"
-     ."<td><a href=\"$url&q=".b64e("show table status")."\">status</a></td>"
-     ."<td><a href=\"$url&q=".b64e("show triggers")."\">trig</a>";
-     $sqldr.="<td>$v</td>";
-   }else{
-     for($i=0;$i<$fields_num;$i++){
-      $v=$row[$i];
-      if (is_null($v)) $v="NULL";
-      elseif (preg_match('/[\x00-\x09\x0B\x0C\x0E-\x1F]+/',$v)) { #all chars <32, except \n\r(0D0A)
-       $vl=strlen($v);$pf='';
-       if ($vl>16 && $fields_num>1){#show full dump if just one field
-         $v=substr($v, 0, 16);$pf='...';
-       }
-       $v='BINARY: '.chunk_split(strtoupper(bin2hex($v)),2,' ').$pf;
-      }else $v=hs($v);
-      if ($is_show_crt) $v="<pre>$v</pre>";
-      $sqldr.="<td><div>$v".(!strlen($v)?"<br>":'')."</div></td>";
-     }
-   }
+   $swp = false;
+   $sqldr.="<tr class='".$rc[$swp=!$swp]."' onclicfunction sel($arr,$n,$sel=''){
+ $res = ''; // Initialize $res variable
+ foreach ($arr as $a) {
+    $vq = '`' . $v . '`';
+   $url = '?' . $xurl . "&db=" . $dbn . "&t=" . base64_encode($v);
+
+    if ($is_shd) {
+      $v = "<a href=\"$url&q=" . b64e("SHOW TABLE STATUS") . "\">" . $v . "</a></td>";
+             . "<td><a href=\"$url&q=" . b64e("show create database `$v`") . "\">scd</a></td>"
+             . "<td><a href=\"$url&q=" . b64e("show table status") . "\">status</a></td>"
+             . "<td><a href=\"$url&q=" . b64e("show triggers") . "\">trig</a>";
+        $sqldr .= "<td>$v</td>";
+    } else {
+        $v = "<input type='checkbox' name='cb[]' value=\\\"$vq\\\"></td>"
+             . "<td><a href=\"$url&q=" . b64e("select * from $vq") . "\">" . $v . "</a></td>"
+             . "<td>" . $row[1] . "</td>"
+             . "<td align='right'>" . $row[4] . "</td>"
+             . "<td align='right'>" . $row[6] . "</td>"
+             . "<td align='right'>" . $row[8] . "</td>"
+             . "<td>&#183;<a href=\"$url&q=" . b64e("show create table $vq") . "\">sct</a></td>"
+             . "<td>&#183;<a href=\"$url&q=" . b64e("explain $vq") . "\">exp</a></td>"
+             . "<td>&#183;<a href=\"$url&q=" . b64e("show index from $vq") . "\">ind</a></td>"
+             . "<td>&#183;<a href=\"$url&shex=1&rt=$vq\">export</a></td>"
+             . "<td>&#183;<a href=\"$url&q=" . b64e("drop table $vq") . "\" onclick='return ays()'>dr</a></td>"
+             . "<td>&#183;<a href=\"$url&q=" . b64e("truncate table $vq") . "\" onclick='return ays()'>tr</a></td>"
+             . "<td>&#183;<a href=\"$url&q=" . b64e("optimize table $vq") . "\" onclick='return ays()'>opt</a></td>"
+             . "<td>&#183;<a href=\"$url&q=" . b64e("repair table $vq") . "\" onclick='return ays()'>rpr</a></td>"
+             . "<td>" . hs($row[$fields_num - 1]);
+        $sqldr .= "<td>$v</td>";
+    }
+}
+
+if (!$is_shd) {
+    for ($i = 0; $i < $fields_num; $i++) {
+        $v = $row[$i];
+        if (is_null($v)) {
+            $v = "NULL";
+        } elseif (preg_match('/[\x00-\x09\x0B\x0C\x0E-\x1F]+/', $v)) {
+            $vl = strlen($v);
+            $pf = '';
+            if ($vl > 16 && $fields_num > 1) {
+                $v = substr($v, 0, 16);
+                $pf = '...';
+            }
+            $v = 'BINARY: ' . chunk_split(strtoupper(bin2hex($v)), 2, ' ') . $pf;
+        } else {
+            $v = hs($v);
+        }
+        if ($is_show_crt) {
+            $v = "<pre>$v</pre>";
+        }
+        $sqldr .= "<td><div>$v</div></td>";
+        $sqldr .= "</tr>\n";
+    }
+}
+$sqldr .= "</table></div>\n".$abtn;
+}
    $sqldr.="</tr>\n";
  }
  $sqldr.="</table></div>\n".$abtn;
