@@ -1,4 +1,4 @@
-helm install phpfpm . \
+helm install phpfpm \
   --set mariadb.mariadbRootPassword=mini \
   --set mariadb.mariadbUser=mini \
   --set mariadb.mariadbPassword=mini \
