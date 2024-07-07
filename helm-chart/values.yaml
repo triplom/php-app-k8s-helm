@@ -4,7 +4,7 @@
 replicaCount: 1
 image:
   repository: triplom/phpfpm-app
-  tag: 0.1.3
+  tag: 0.2.2
   pullPolicy: IfNotPresent
 nginxService:
   name: nginx
