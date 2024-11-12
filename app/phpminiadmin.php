@@ -40,16 +40,16 @@ if (function_exists('date_default_timezone_set')) date_default_timezone_set('UTC
 if (ini_get('magic_quotes_gpc')){
   $_COOKIE=array_map('killmq',$_COOKIE);
   $_REQUEST=array_map('killmq',$_REQUEST);
- }
  if ($_REQUEST['login']){
     if ($_REQUEST['pwd']!=$ACCESS_PWD){
        $err_msg="Invalid password. Try again";
-    }else{
+    } else {
        $_SESSION['is_logged']=true;
        loadcfg();
     }
- }
- if ($_REQUEST['logoff']){
+ } // Add this closing brace
+} // Closing brace added here
+if ($_REQUEST['logoff']){
     check_xss();
     $_SESSION = array();
     savecfg();
@@ -125,12 +125,7 @@ function do_sql($q){
  $SQLq=$q;
  if (!do_multi_sql($q)){
     $out_message="Error: ".mysqli_error($dbh);
- } elseif ($_REQUEST['logoff']) {
-
-
-
-}
-else {
+ } else {
     if ($last_sth && $last_sql){
        $SQLq=$last_sql;
        if (preg_match("/^select|show|explain|desc/i",$last_sql)) {
@@ -200,12 +195,13 @@ function display_select($sth,$q){
    $url = '?' . $xurl . "&db=" . $dbn . "&t=" . base64_encode($v);
 
     if ($is_shd) {
-      $v = "<a href=\"$url&q=" . b64e("SHOW TABLE STATUS") . "\">" . $v . "</a></td>";
+      $v = "<a href=\"$url&q=" . b64e("SHOW TABLE STATUS") . "\">" . $v . "</a></td>"
              . "<td><a href=\"$url&q=" . b64e("show create database `$v`") . "\">scd</a></td>"
              . "<td><a href=\"$url&q=" . b64e("show table status") . "\">status</a></td>"
              . "<td><a href=\"$url&q=" . b64e("show triggers") . "\">trig</a>";
         $sqldr .= "<td>$v</td>";
-    } else {
+    }
+   else {
         $v = "<input type='checkbox' name='cb[]' value=\\\"$vq\\\"></td>"
              . "<td><a href=\"$url&q=" . b64e("select * from $vq") . "\">" . $v . "</a></td>"
              . "<td>" . $row[1] . "</td>"
@@ -247,8 +243,7 @@ if (!$is_shd) {
         $sqldr .= "<td><div>$v</div></td>";
         $sqldr .= "</tr>\n";
     }
-}
-$sqldr .= "</table></div>\n".$abtn;
+    $sqldr .= "</table></div>\n".$abtn;
 }
    $sqldr.="</tr>\n";
  }
