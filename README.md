@@ -40,14 +40,15 @@ Run the docker-compose up command in order to create and start the containers:
  docker-compose -f app/docker-compose.yml up -d
  ```
 
-Check if the application is running correctly by entering http://localhost/phpminiadmin.php in your default browser.
+Check if the application is running correctly by entering <http://localhost/phpminiadmin.php> in your default browser.
 
 To log in to the application, you must connect first to the database. Click the “advanced settings” link and enter the information below. Then, click “Apply”.
-*  DB user name: test
-*  Password: test
-*  DB name: test
-*  MySQL host: mariadb
-*  port: 3306
+
+* DB user name: test
+* Password: test
+* DB name: test
+* MySQL host: mariadb
+* port: 3306
 
 ### Step 3: Publish the Docker Image
 
@@ -100,7 +101,7 @@ First, make sure that you are able to connect to your Kubernetes cluster by exec
 kubectl cluster-info
 ```
 
-To deploy the example application in K8S, we use the Helm CLI: install 
+To deploy the example application in K8S, we use the Helm CLI: install
 
 ```bash
 helm install phpfpm . --set mariadb.mariadbRootPassword=mini,mariadb.mariadbUser=mini,mariadb.mariadbPassword=mini,mariadb.mariadbDatabase=mini
@@ -112,7 +113,7 @@ helm install phpfpm . --set mariadb.mariadbRootPassword=mini,mariadb.mariadbUser
 * The `mini` values is a placeholders for the database root password, user credentials and database name respectively, remember to replace them with the right values.
 Once the chart has been installed, you will see a lot of useful information about the deployment.
 
-The application won’t be available until database configuration is complete. 
+The application won’t be available until database configuration is complete.
 
 ## Get the application URL
 
@@ -123,10 +124,16 @@ In Minikube, we can check the application service to get the application’s URL
 
 ## Explore the app
 
-Copy the **application url** from the last command output. then, using this value open **application url**/phpminiadmin.php in your default browser, 
-
-and use the **right Mariadb credentials** (use the database service name: **phpfpm-mariadb** as the **MYSQL_HOST**) to access the phpminiadmin application.
+Copy the **application url** from the last command output. then, using this value open **application url**/phpminiadmin.php in your default browser, and use the **right Mariadb credentials** (use the database service name: **phpfpm-mariadb** as the **MYSQL_HOST**) to access the phpminiadmin application.
 Finally, we can read data  from the database by runnig the SQL query ike the list of tables, databases ...
 ![alt APP](result.png)
 
-Congratulations! our PHP application has been successfully deployed on Kubernetes!
+Congratulations! our PHP application has been successfully deployed on Kubernetes!  
+
+## Clean up
+
+To clean up the application, use the command below:
+
+```bash
+helm delete phpfpm
+```
