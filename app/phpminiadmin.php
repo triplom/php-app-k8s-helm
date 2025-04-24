@@ -123,16 +123,20 @@ if ($_REQUEST['logoff']){
 function do_sql($q){
  global $dbh,$last_sth,$last_sql,$reccount,$out_message,$SQLq,$SHOW_T;
  $SQLq=$q;
- if (!do_multi_sql($q)){
+ if (function_exists('do_multi_sql') && !do_multi_sql($q)){
     $out_message="Error: ".mysqli_error($dbh);
  } else {
     if ($last_sth && $last_sql){
        $SQLq=$last_sql;
        if (preg_match("/^select|show|explain|desc/i",$last_sql)) {
           if ($q!=$last_sql) $out_message="Results of the last select displayed:";
-          display_select($last_sth,$last_sql);
+          if (function_exists('display_select')) {
+              display_select($last_sth, $last_sql);
+          }
        } else {
-         $reccount=mysqli_affected_rows($dbh);
+         if (preg_match("/^insert|replace/i", $last_sql) && function_exists('get_identity')) {
+             $out_message .= " Last inserted id=" . get_identity();
+         }
          $out_message="Done.";
          if (preg_match("/^insert|replace/i",$last_sql)) $out_message.=" Last inserted id=".get_identity();
          if (preg_match("/^drop|truncate/i",$last_sql)) do_sql($SHOW_T);
@@ -188,16 +192,16 @@ function display_select($sth,$q){
  $swapper=false;
  while($row=mysqli_fetch_row($sth)){
    $swp = false;
-   $sqldr.="<tr class='".$rc[$swp=!$swp]."' onclicfunction sel($arr,$n,$sel=''){
+   $url = '?' . $xurl . "&db=" . $dbn . "&t=" . base64_encode($a);
  $res = ''; // Initialize $res variable
  foreach ($arr as $a) {
-    $vq = '`' . $v . '`';
+      $v = "<a href=\"$url&q=" . b64e("SHOW TABLE STATUS") . "\">" . $v . "</a>";
    $url = '?' . $xurl . "&db=" . $dbn . "&t=" . base64_encode($v);
 
     if ($is_shd) {
       $v = "<a href=\"$url&q=" . b64e("SHOW TABLE STATUS") . "\">" . $v . "</a></td>"
              . "<td><a href=\"$url&q=" . b64e("show create database `$v`") . "\">scd</a></td>"
-             . "<td><a href=\"$url&q=" . b64e("show table status") . "\">status</a></td>"
+   } else {
              . "<td><a href=\"$url&q=" . b64e("show triggers") . "\">trig</a>";
         $sqldr .= "<td>$v</td>";
     }
