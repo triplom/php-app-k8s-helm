@@ -200,12 +200,15 @@ function display_select($sth,$q){
 
     if ($is_shd) {
       $v = "<a href=\"$url&q=" . b64e("SHOW TABLE STATUS") . "\">" . $v . "</a></td>"
-             . "<td><a href=\"$url&q=" . b64e("show create database `$v`") . "\">scd</a></td>"
-   } else {
-             . "<td><a href=\"$url&q=" . b64e("show triggers") . "\">trig</a>";
+             . "<td><a href=\"$url&q=" . b64e("show create database `$v`") . "\">scd</a></td>";
+    } else {
+        $v = "<a href=\"$url&q=" . b64e("show triggers") . "\">trig</a>";
         $sqldr .= "<td>$v</td>";
     }
-   else {
+   
+   if ($is_sht) {
+       // ...existing code...
+   } else {
         $v = "<input type='checkbox' name='cb[]' value=\\\"$vq\\\"></td>"
              . "<td><a href=\"$url&q=" . b64e("select * from $vq") . "\">" . $v . "</a></td>"
              . "<td>" . $row[1] . "</td>"
