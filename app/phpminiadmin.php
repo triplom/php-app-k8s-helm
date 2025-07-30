@@ -47,8 +47,8 @@ if (ini_get('magic_quotes_gpc')){
        $_SESSION['is_logged']=true;
        loadcfg();
     }
- } // Add this closing brace
-} // Closing brace added here
+ }
+}
 if ($_REQUEST['logoff']){
     check_xss();
     $_SESSION = array();
@@ -192,9 +192,9 @@ function display_select($sth,$q){
  $swapper=false;
  while($row=mysqli_fetch_row($sth)){
    $swp = false;
-   $url = '?' . $xurl . "&db=" . $dbn . "&t=" . base64_encode($a);
+   $url = '?' . $xurl . "&db=" . $dbn . "&t=" . base64_encode($v);
  $res = ''; // Initialize $res variable
- foreach ($arr as $a) {
+ foreach ($arr as $v) {
       $v = "<a href=\"$url&q=" . b64e("SHOW TABLE STATUS") . "\">" . $v . "</a>";
    $url = '?' . $xurl . "&db=" . $dbn . "&t=" . base64_encode($v);
 
