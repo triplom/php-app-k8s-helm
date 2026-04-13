@@ -1,0 +1,26 @@
+# Environment files with secrets
+.env
+.env.*
+!.env.example
+
+# Helm binary artifacts (use Chart.yaml dependencies instead)
+*.tgz
+*.tar.gz
+
+# Docker build artifacts
+*.log
+
+# IDE and OS files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+temp/
+
+# OpenCode internal files
+.opencode/

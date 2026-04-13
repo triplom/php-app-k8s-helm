@@ -1,0 +1,29 @@
+# Exclude version control
+.git
+.gitignore
+
+# Exclude Helm chart (not part of Docker image)
+helm-chart
+
+# Exclude documentation and tooling
+docker-compose.yml
+README.md
+result.png
+*.md
+
+# Exclude binary artifacts
+*.tgz
+*.tar.gz
+*.zip
+
+# Exclude environment files with secrets
+.env
+.env.*
+!.env.example
+
+# Exclude IDE and OS files
+.DS_Store
+.idea
+.vscode
+*.swp
+*.swo

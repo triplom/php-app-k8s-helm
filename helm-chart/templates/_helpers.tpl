@@ -14,10 +14,10 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- $name := default .Chart.Name .Values.nameOverride -}}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
 {{/*
-Create a default fully qualified app name.
-We truncate at  63 | trimSuffix "-" chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+Create a fully qualified name for the MariaDB dependency.
 */}}
-#{{- define "mariadb.fullname" -}}
-#{{- printf "%s-%s" .Release.Name "mariadb" | trunc  63 | trimSuffix "-" -}}
-#{{- end -}}
+{{- define "mariadb.fullname" -}}
+{{- printf "%s-%s" .Release.Name "mariadb" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}

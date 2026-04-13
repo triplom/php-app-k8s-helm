@@ -11,13 +11,44 @@ data:
   nginx.conf: |-
     server {
       listen 0.0.0.0:{{ .Values.nginxService.internalPort }};
+      server_name _;
+
       root /app;
+
+      # Security headers
+      add_header X-Frame-Options        "SAMEORIGIN"   always;
+      add_header X-Content-Type-Options "nosniff"      always;
+      add_header X-XSS-Protection       "1; mode=block" always;
+      add_header Referrer-Policy        "strict-origin-when-cross-origin" always;
+
+      server_tokens off;
+
       location / {
-        index index.html index.php;
+        index index.php;
+        try_files $uri $uri/ =404;
       }
-      location ~ \.php$ {
+
+      location = /index.php {
         fastcgi_pass {{ template "fullname" . }}-phpfpm:9000;
         fastcgi_index index.php;
-        include fastcgi.conf;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+      }
+
+      location = /app_version.php {
+        fastcgi_pass {{ template "fullname" . }}-phpfpm:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+      }
+
+      # Deny all other PHP file execution
+      location ~ \.php$ {
+        return 403;
+      }
+
+      # Deny access to hidden files
+      location ~ /\. {
+        deny all;
       }
     }
