@@ -20,8 +20,9 @@
 9. [Application Endpoints](#application-endpoints)
 10. [Configuration Reference](#configuration-reference)
 11. [Security Overview](#security-overview)
-12. [Troubleshooting](#troubleshooting)
-13. [Clean Up](#clean-up)
+12. [Database Administration](#database-administration)
+13. [Troubleshooting](#troubleshooting)
+14. [Clean Up](#clean-up)
 
 ---
 
@@ -631,6 +632,25 @@ docker compose down -v     # Stop containers and delete MariaDB data volume
 helm uninstall phpfpm                          # Remove all Helm-managed resources
 kubectl delete pvc -l app.kubernetes.io/instance=phpfpm   # Remove data volumes
 ```
+
+---
+
+## Database Administration
+
+The original `phpminiadmin.php` was removed during the security refactoring — it had hardcoded credentials, no authentication, and SQL injection vulnerabilities.
+
+Safe alternatives (Adminer web UI, MariaDB CLI, GUI clients) are covered in the dedicated admin guide:
+
+**[README-Admin.md](README-Admin.md)**
+
+Quick reference:
+
+| Method | Best for | Command |
+|--------|----------|---------|
+| Adminer (Docker) | Web UI, local dev | `docker run --rm --network php-app-k8s-helm_app-tier -p 8081:8080 adminer` |
+| MariaDB CLI | Quick queries, scripts | `docker exec -it php-app-k8s-helm-mariadb-1 mariadb -u appuser -p appdb` |
+| GUI client | Schema browsing | Port-forward 3306, connect with TablePlus / DBeaver |
+| kubectl exec | Kubernetes | `kubectl exec -it phpfpm-mariadb-0 -- mariadb -u appuser -p appdb` |
 
 ---
 
