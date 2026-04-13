@@ -1,5 +1,3 @@
-version: '3.9'
-
 networks:
   app-tier:
     driver: bridge
@@ -12,9 +10,11 @@ services:
       - app-tier
     env_file:
       - .env
+    volumes:
+      - ./app:/app:ro
 
   nginx:
-    image: bitnami/nginx:1.25
+    image: bitnami/nginx:latest
     restart: unless-stopped
     depends_on:
       - phpfpm
@@ -24,9 +24,10 @@ services:
       - '8080:8080'
     volumes:
       - ./app/server_blocks:/opt/bitnami/nginx/conf/server_blocks
+      - ./app:/app:ro
 
   mariadb:
-    image: bitnami/mariadb:11.2
+    image: bitnami/mariadb:latest
     restart: unless-stopped
     networks:
       - app-tier
